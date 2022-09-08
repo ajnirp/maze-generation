@@ -1,3 +1,7 @@
+# About
+
+Implementations of maze generation algorithms. Some are just direct Python ports of Jamis Buck's implementations, for example the [recursive backtracking algo](https://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking.html).
+
 # Setup
 
 ```
