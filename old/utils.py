@@ -1,3 +1,5 @@
+# Utility functions for drawing. Unused now.
+
 from constants import *
 
 from PIL import Image, ImageDraw
