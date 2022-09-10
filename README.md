@@ -26,3 +26,4 @@ python main.py
 * Factor out maze generation methods into their own class structure?
 * Command-line args to specify what kind of maze and what maze generation method
   * Check for compatibility: some mazes might permit only certain methods?
+* Improve rendering: use the padding param, and fill a non-white background color for the maze?

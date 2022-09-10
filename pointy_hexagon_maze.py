@@ -5,6 +5,7 @@ from maze import Maze
 from PIL import Image, ImageDraw
 from random import shuffle
 
+SQRT_3 = 1.73205
 NW, NE, E, SE, SW, W = 1, 2, 4, 8, 16, 32
 SEEN_MARKER = 64 # when this is set, the cell is seen
 
@@ -90,6 +91,58 @@ class PointyHexagonMaze(Maze):
                 continue
 
             yield (nq, nr, direction)
+
+    def render_to_png(self, filename):
+        SC = 100 # output scale
+        M = 25 # padding
+
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+
+        # a pointy hexagon with side s can be tightly bounded by a rectangle of
+        # width s*sqrt(3) and height 3s-1
+        WIDTH = int((2*self.N - 1)*SQRT_3*SC) # centre row has 2N-1 cells
+        HEIGHT = int((3*self.N-1)*SC)
+
+        image = Image.new('RGB', (WIDTH + 2*M, HEIGHT + 2*M))
+        draw = ImageDraw.Draw(image)
+
+        draw.rectangle([(0, 0),
+                        (WIDTH + 2*M, HEIGHT + 2*M)],
+                        WHITE)
+
+        # debugging
+        draw.rectangle([(M, M),
+                        (WIDTH + M, HEIGHT + M)],
+                        WHITE,
+                        (255, 0, 0))
+
+        # draw the top and bottom walls
+        top_wall, bottom_wall = [], []
+        for col in range(self.N + 1):
+            x = M + SC*SQRT_3*(col + ((self.N-1) / 2))
+            dx = SC*SQRT_3 / 2
+
+            top_wall.extend([(x, M + SC / 2), (x+dx, M)])
+            bottom_wall.extend([(x, M + SC*(3*self.N - 1.5)), (x+dx, M + SC*(3*self.N - 1))])
+
+        # there should be 2*N + 1 points in the top and bottom walls, so pop
+        # the extra points.
+        top_wall.pop()
+        bottom_wall.pop()
+
+        draw.line(top_wall, BLACK)
+        draw.line(bottom_wall, BLACK)
+
+        # draw the left and right walls for each row
+
+        # draw the E, SW, SE walls for each row if they exist
+
+        del draw
+
+        path = f"./img/{filename}"
+        print(f"Writing maze to {path}.png")
+        image.save(f"{path}", 'PNG')
 
     '''
     Generate a maze by carving out passages starting from cell (cq, cr). Here

@@ -10,4 +10,4 @@ if __name__ == '__main__':
     maze = PointyHexagonMaze(3)
     maze.generate()
     # maze.render_to_text()
-    # maze.render_to_png('iterative-backtracking')
+    maze.render_to_png('hex')
