@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw
 from random import shuffle
 
 N, S, E, W = 1, 2, 4, 8
+SEEN_MARKER = 16
 
 DX = {
     E: 1,
@@ -26,6 +27,9 @@ OPPOSITE = {
     S: N,
 }
 
+'''
+Maze based on a 2D square grid.
+'''
 class CartesianMaze(Maze):
     def __init__(self, side):
         super().__init__(side)
@@ -117,6 +121,12 @@ class CartesianMaze(Maze):
 
             yield (nx, ny, direction)
 
+    def seen(self, cx, cy):
+        return self.grid[cy][cx] & SEEN_MARKER != 0
+
+    def mark_seen(self, cx, cy):
+        self.grid[cy][cx] |= SEEN_MARKER
+
     '''
     Generate a maze by carving out passages starting from cell (cx, cy). Here
     `cx` is the row, `cy` is the column.
@@ -133,9 +143,9 @@ class CartesianMaze(Maze):
             # cell that enqueued it. This is why we start out the stack with a
             # None `reverse_dir`.
             cx, cy, reverse_dir = stack.pop()
-            if seen[cy][cx]:
+            if self.seen(cx, cy):
                 continue
-            seen[cy][cx] = True
+            self.mark_seen(cx, cy)
 
             if reverse_dir:
                 px, py = cx + DX[reverse_dir], cy + DY[reverse_dir]

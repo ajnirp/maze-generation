@@ -25,6 +25,10 @@ class Maze:
     def has_wall(self, coords, direction):
         raise NotImplementedError("Abstract method `has_wall` must be implemented")
 
+    '''
+    Generator function to yield a list of neighbor cells for `coords`. Implementations
+    will usually end up calling self.in_bounds(coords).
+    '''
     def neighbors(self, coords):
         raise NotImplementedError("Abstract method `neighbors` must be implemented")
 
