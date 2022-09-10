@@ -7,7 +7,7 @@ if __name__ == '__main__':
     # maze.render_to_text()
     # maze.render_to_png('iterative-backtracking')
 
-    maze = PointyHexagonMaze(25)
+    maze = PointyHexagonMaze(15)
     maze.generate()
     # maze.render_to_text()
     maze.render_to_png('hex')

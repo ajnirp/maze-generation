@@ -1,4 +1,7 @@
 # Reference: https://www.redblobgames.com/grids/hexagons/
+# This was a fun one! Lots of math involved, mainly in maze rendering. I left
+# some notes at the end in a scratchpad comment block to jog my memory next time
+# I read this code.
 
 from maze import Maze
 
@@ -94,7 +97,7 @@ class PointyHexagonMaze(Maze):
             yield (nq, nr, direction)
 
     def render_to_png(self, filename):
-        SC = 50 # output scale
+        SC = 20 # output scale
         M = 25 # padding
 
         WHITE = (255, 255, 255)
