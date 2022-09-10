@@ -9,13 +9,22 @@ class Maze:
         self.side = side
 
     '''
-    Returns True iff the cell represented by `coords` lies within
-    the maze. `coords` is a list of integers. For a Cartesian maze this would be
-    a list of 2 integers. For a hex maze using cube coordinates this would be a
-    list of 3 integers.
+    Returns True iff the cell represented by `coords` lies within the maze.
+    `coords` is a list of integers. The interpretation of `coords` is up to the
+    implementation class. Examples:
+    1. For a Cartesian maze `coords` would be a list of 2 ints.
+    2. For a hex maze using cube coordinates `coords` would be a list of 3 ints.
     '''
     def in_bounds(self, coords):
         raise NotImplementedError("Abstract method `in_bounds` must be implemented")
+
+    '''
+    Fetch the data stored at `coords` in the maze. The way data is represented
+    is entirely up to the derived class. Typically there is some grid backing
+    the maze that contains info in each cell about the cell's walls.
+    '''
+    def at(self, coords):
+        raise NotImplementedError("Abstract method `at` must be implemented")
 
     '''
     Returns True iff the cell represented by `coords` has a wall in the direction
@@ -26,8 +35,8 @@ class Maze:
         raise NotImplementedError("Abstract method `has_wall` must be implemented")
 
     '''
-    Generator function to yield a list of neighbor cells for `coords`. Implementations
-    will usually end up calling self.in_bounds(coords).
+    Generator function to yield a list of neighbor cells for the cell located at
+    # `coords`. Implementations will usually end up calling self.in_bounds(coords).
     '''
     def neighbors(self, coords):
         raise NotImplementedError("Abstract method `neighbors` must be implemented")
@@ -49,3 +58,17 @@ class Maze:
     '''
     def generate(self):
         raise NotImplementedError("Abstract method `generate` must be implemented")
+
+    # Private methods
+
+    '''
+    Check if the cell at `coords` was "seen" during maze generation.
+    '''
+    def __seen(self, coords):
+        raise NotImplementedError("Abstract method `__seen` must be implemented")
+
+    '''
+    Mark the cell at `coords` as "seen" during maze generation.
+    '''
+    def __mark_seen(self, coords):
+        raise NotImplementedError("Abstract method `__mark_seen` must be implemented")

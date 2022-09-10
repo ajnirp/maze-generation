@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from random import shuffle
 
 N, S, E, W = 1, 2, 4, 8
-SEEN_MARKER = 16
+SEEN_MARKER = 16 # when this is set, the cell is seen
 
 DX = {
     E: 1,
@@ -121,12 +121,6 @@ class CartesianMaze(Maze):
 
             yield (nx, ny, direction)
 
-    def seen(self, cx, cy):
-        return self.grid[cy][cx] & SEEN_MARKER != 0
-
-    def mark_seen(self, cx, cy):
-        self.grid[cy][cx] |= SEEN_MARKER
-
     '''
     Generate a maze by carving out passages starting from cell (cx, cy). Here
     `cx` is the row, `cy` is the column.
@@ -135,17 +129,14 @@ class CartesianMaze(Maze):
         # We start out with `reverse_dir` == None. Read below to see why.
         stack = [(cx, cy, None)]
 
-        # Boolean 2D array of cells which have been seen.
-        seen = [[False for _ in range(self.cols)] for _ in range(self.rows)]
-
         while stack:
             # `reverse_dir` is the direction that takes you from (cx, cy) to the
             # cell that enqueued it. This is why we start out the stack with a
             # None `reverse_dir`.
             cx, cy, reverse_dir = stack.pop()
-            if self.seen(cx, cy):
+            if self.__seen([cy, cx]):
                 continue
-            self.mark_seen(cx, cy)
+            self.__mark_seen([cy, cx])
 
             if reverse_dir:
                 px, py = cx + DX[reverse_dir], cy + DY[reverse_dir]
@@ -157,4 +148,12 @@ class CartesianMaze(Maze):
                 stack.append((nx, ny, OPPOSITE[new_dir]))
 
     def generate(self):
-        self.carve_passages_from(0, 0)
+        self.carve_passages_from(0, 0) # top-leftmost cell
+
+    def __seen(self, coords):
+        cy, cx = coords
+        return self.grid[cy][cx] & SEEN_MARKER != 0
+
+    def __mark_seen(self, coords):
+        cy, cx = coords
+        self.grid[cy][cx] |= SEEN_MARKER

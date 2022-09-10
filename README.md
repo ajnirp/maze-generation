@@ -19,3 +19,10 @@ python main.py
 # Notes
 
 * `img/` contains image outputs and its contents can be safely deleted. Don't delete the folder itself
+
+# TODO
+
+* Make private most methods except ones like `generate` and `render_*`
+* Factor out maze generation methods into their own class structure?
+* Command-line args to specify what kind of maze and what maze generation method
+  * Check for compatibility: some mazes might permit only certain methods?
