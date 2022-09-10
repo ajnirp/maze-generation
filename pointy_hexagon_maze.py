@@ -66,7 +66,6 @@ class PointyHexagonMaze(Maze):
         q, r = coords
         # in the r-th row, the number of elements is
         # 2*N - 1 - abs(N-r-1)
-        # and the q-index goes from 
         # e.g. if side == 3, the rows have these many elements
         # (term becomes 5 - abs(2-r))
         # r 0 => 3 => 2 3 4
@@ -74,9 +73,11 @@ class PointyHexagonMaze(Maze):
         # r 2 => 5 => 0 1 2 3 4
         # r 3 => 4 => 0 1 2 3
         # r 4 => 3 => 0 1 2
+        # the values of q range from (inclusive) max(0, N-r-1)
+        # to (non-inclusive) 2N - 1 - abs(N-r-1) + max(0, N-r-1)
 
-        d = self.N - r - 1 # signed distance of the row from the center row
-        return 0 <= r < self.rows - 1 and max(0, d) <= q < self.rows - abs(d) + max(0, d)
+        qmin, qmax = self.__q_range(r)
+        return 0 <= r < self.rows and qmin <= q < qmax
 
     def neighbors(self, coords):
         directions = [NW, NE, E, SE, SW, W]
@@ -93,7 +94,7 @@ class PointyHexagonMaze(Maze):
             yield (nq, nr, direction)
 
     def render_to_png(self, filename):
-        SC = 100 # output scale
+        SC = 50 # output scale
         M = 25 # padding
 
         WHITE = (255, 255, 255)
@@ -111,13 +112,13 @@ class PointyHexagonMaze(Maze):
                         (WIDTH + 2*M, HEIGHT + 2*M)],
                         WHITE)
 
-        # debugging
-        draw.rectangle([(M, M),
-                        (WIDTH + M, HEIGHT + M)],
-                        WHITE,
-                        (255, 0, 0))
+        # # debugging for padding
+        # draw.rectangle([(M, M),
+        #                 (WIDTH + M, HEIGHT + M)],
+        #                 WHITE,
+        #                 (255, 0, 0))
 
-        # draw the top and bottom walls
+        # draw the top and bottom boundaries
         top_wall, bottom_wall = [], []
         for col in range(self.N + 1):
             x = M + SC*SQRT_3*(col + ((self.N-1) / 2))
@@ -134,9 +135,55 @@ class PointyHexagonMaze(Maze):
         draw.line(top_wall, BLACK)
         draw.line(bottom_wall, BLACK)
 
-        # draw the left and right walls for each row
+        x = M + SC*SQRT_3*(self.N-1)/2
+        y = M + SC/2
+        n = self.N # number of elements in the row
+        dx, dy, dn = -SC*SQRT_3/2, SC*1.5, 1
 
-        # draw the E, SW, SE walls for each row if they exist
+        # draw the rows along with their left and right boundaries
+        left_wall, right_wall = [], []
+        for r in range(self.rows):
+            if r == self.N-1:
+                dx = -dx
+                dn = -dn
+                left_wall.pop()
+                right_wall.pop()
+
+            left_wall.extend([(x, y),
+                              (x, y+SC),
+                              (x+dx, y+dy)])
+
+            qmin, qmax = self.__q_range(r)
+
+            # number of cells in row r is qmax - qmin
+            row_width = (qmax-qmin)*SC*SQRT_3
+
+            right_wall.extend([(x+row_width, y),
+                               (x+row_width, y+SC),
+                               (x+row_width-dx, y+dy)])
+
+            # for each cell in this row, draw the E, SE, SW walls if they exist
+            for q in range(qmin, qmax):
+                if self.has_wall([q, r], E):
+                    draw.line([(x+(q-qmin+1)*SQRT_3*SC, y),
+                               (x+(q-qmin+1)*SQRT_3*SC, y+SC)],
+                              BLACK)
+                if self.has_wall([q, r], SE):
+                    draw.line([(x+(q-qmin+1)*SQRT_3*SC, y+SC),
+                               (x+(q-qmin+0.5)*SQRT_3*SC, y+SC*1.5)],
+                              BLACK)
+                if self.has_wall([q, r], SW):
+                    draw.line([(x+(q-qmin+0.5)*SQRT_3*SC, y+SC*1.5),
+                               (x+(q-qmin)*SQRT_3*SC, y+SC)],
+                              BLACK)
+
+            x += dx
+            y += dy
+            n += dn
+
+        left_wall.pop()
+        draw.line(left_wall, BLACK)
+        draw.line(right_wall, BLACK)
 
         del draw
 
@@ -173,6 +220,15 @@ class PointyHexagonMaze(Maze):
     def generate(self):
         self.carve_passages_from(self.N-1, 0) # top-leftmost cell
 
+    '''
+    When the bitwise AND of a cell and a direction is 0 it means there is no
+    connection in that direction, which means there is a wall there. This method
+    assumes that `coords` is known to be in_bounds.
+    '''
+    def has_wall(self, coords, direction):
+        row, col = self.__coords(*coords)
+        return self.grid[row][col] & direction == 0
+
     def __seen(self, coords):
         row, col = self.__coords(*coords)
         return self.grid[row][col] & SEEN_MARKER != 0
@@ -180,6 +236,12 @@ class PointyHexagonMaze(Maze):
     def __mark_seen(self, coords):
         row, col = self.__coords(*coords)
         self.grid[row][col] |= SEEN_MARKER
+
+    # Given a row index r, return two values a, b such that q lies in the
+    # range [a, b) for that r
+    def __q_range(self, r):
+        d = self.N-r-1 # signed distance of r from center row
+        return max(0, d), self.rows - abs(d) + max(0, d)
 
     '''
     Break the wall at cell `(q, r)` in the direction `direction`.

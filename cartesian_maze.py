@@ -75,7 +75,7 @@ class CartesianMaze(Maze):
             print()
 
     def render_to_png(self, filename):
-        SC = 25 # output scale
+        SC = 10 # output scale
         M = 0 # padding
 
         W, H = self.cols*SC, self.rows*SC
