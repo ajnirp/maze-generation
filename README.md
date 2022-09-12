@@ -30,7 +30,6 @@ python main.py
 
 # TODO
 
-* Triangle maze
 * Add code to print the maze parameters at the bottom of the generated image, with a link to my Github?
 * Factor out maze generation methods into their own class structure?
 * Command-line args to specify what kind of maze and what maze generation method and what maze size
