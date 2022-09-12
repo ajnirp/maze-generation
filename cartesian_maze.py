@@ -37,24 +37,18 @@ class CartesianMaze(Maze):
         self.cols = side
         self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
 
-    def in_bounds(self, coords):
+    def __in_bounds(self, coords):
         r, c = coords
         return 0 <= r < self.rows and 0 <= c < self.cols
 
     '''
     When the bitwise AND of a cell and a direction is 0 it means there is no
     connection in that direction, which means there is a wall there. This method
-    assumes that `coords` is known to be in_bounds.
+    assumes that `coords` is known to be in bounds.
     '''
-    def has_wall(self, coords, direction):
+    def __has_wall(self, coords, direction):
         r, c = coords
         return self.grid[r][c] & direction == 0
-
-    def has_east_wall(self, coords):
-        return self.has_wall(coords, E)
-
-    def has_south_wall(self, coords):
-        return self.has_wall(coords, S)
 
     def render_to_text(self):
         print(' ' + '_' * (2*self.cols - 1)) # top row
@@ -62,13 +56,13 @@ class CartesianMaze(Maze):
             print('|', end='') # leftmost wall
             for c in range(self.cols):
                 # check for south wall
-                if self.has_south_wall([r, c]):
+                if self.__has_wall([r, c], S):
                     print('_', end='')
                 else:
                     print(' ', end='')
 
                 # check for east wall
-                if c == self.cols-1 or self.has_east_wall([r, c]):
+                if c == self.cols-1 or self.__has_wall([r, c], E):
                     print('|', end='')
                 else:
                     print(' ' , end='')
@@ -76,27 +70,28 @@ class CartesianMaze(Maze):
 
     def render_to_png(self, filename):
         SC = 25 # output scale
-        M = 0 # padding
+        M = 20 # padding
 
-        W, H = self.cols*SC, self.rows*SC
+        WIDTH, HEIGHT = self.cols*SC, self.rows*SC
 
         WHITE = (255, 255, 255)
         BLACK = (0, 0, 0)
 
-        image = Image.new('RGB', (W + 2*M, H + 2*M))
+        image = Image.new('RGB', (WIDTH + 2*M, HEIGHT + 2*M))
         draw = ImageDraw.Draw(image)
 
-        draw.rectangle([(M, M),
-                        (M + W, M + H)],
+        draw.rectangle([(0, 0),
+                        (WIDTH + 2*M, HEIGHT + 2*M)],
                         WHITE)
+        draw.rectangle([(M, M), (WIDTH + M, HEIGHT + M)], None, BLACK)
 
         for r in range(self.rows):
             for c in range(self.cols):
-                if self.has_east_wall([r, c]):
+                if self.__has_wall([r, c], E):
                     draw.line([(M + (c+1)*SC, M + r*SC),
                                (M + (c+1)*SC, M + (r+1)*SC)],
                                BLACK)
-                if self.has_south_wall([r, c]):
+                if self.__has_wall([r, c], S):
                     draw.line([(M + c*SC, M + (r+1)*SC),
                                (M + (c+1)*SC, M + (r+1)*SC)],
                                BLACK)
@@ -107,7 +102,7 @@ class CartesianMaze(Maze):
         print(f"Writing maze to {path}.png")
         image.save(f"{path}", 'PNG')
 
-    def neighbors(self, coords):
+    def __neighbors(self, coords):
         directions = [N, E, W, S]
         shuffle(directions)
 
@@ -116,7 +111,7 @@ class CartesianMaze(Maze):
         for direction in directions:
             nx, ny = cx + DX[direction], cy + DY[direction]
 
-            if not self.in_bounds([ny, nx]):
+            if not self.__in_bounds([ny, nx]):
                 continue
 
             yield (nx, ny, direction)
@@ -144,7 +139,7 @@ class CartesianMaze(Maze):
                 self.grid[py][px] |= prev_dir
                 self.grid[cy][cx] |= reverse_dir
 
-            for nx, ny, new_dir in self.neighbors([cx, cy]):
+            for nx, ny, new_dir in self.__neighbors([cx, cy]):
                 stack.append((nx, ny, OPPOSITE[new_dir]))
 
     def generate(self):

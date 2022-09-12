@@ -65,7 +65,7 @@ class PointyHexagonMaze(Maze):
             for r in range(self.rows)
         ]
 
-    def in_bounds(self, coords):
+    def __in_bounds(self, coords):
         q, r = coords
         # in the r-th row, the number of elements is
         # 2*N - 1 - abs(N-r-1)
@@ -82,7 +82,7 @@ class PointyHexagonMaze(Maze):
         qmin, qmax = self.__q_range(r)
         return 0 <= r < self.rows and qmin <= q < qmax
 
-    def neighbors(self, coords):
+    def __neighbors(self, coords):
         directions = [NW, NE, E, SE, SW, W]
         shuffle(directions)
 
@@ -91,7 +91,7 @@ class PointyHexagonMaze(Maze):
         for direction in directions:
             nq, nr = cq + DQ[direction], cr + DR[direction]
 
-            if not self.in_bounds([nq, nr]):
+            if not self.__in_bounds([nq, nr]):
                 continue
 
             yield (nq, nr, direction)
@@ -167,15 +167,15 @@ class PointyHexagonMaze(Maze):
 
             # for each cell in this row, draw the E, SE, SW walls if they exist
             for q in range(qmin, qmax):
-                if self.has_wall([q, r], E):
+                if self.__has_wall([q, r], E):
                     draw.line([(x+(q-qmin+1)*SQRT_3*SC, y),
                                (x+(q-qmin+1)*SQRT_3*SC, y+SC)],
                               BLACK)
-                if self.has_wall([q, r], SE):
+                if self.__has_wall([q, r], SE):
                     draw.line([(x+(q-qmin+1)*SQRT_3*SC, y+SC),
                                (x+(q-qmin+0.5)*SQRT_3*SC, y+SC*1.5)],
                               BLACK)
-                if self.has_wall([q, r], SW):
+                if self.__has_wall([q, r], SW):
                     draw.line([(x+(q-qmin+0.5)*SQRT_3*SC, y+SC*1.5),
                                (x+(q-qmin)*SQRT_3*SC, y+SC)],
                               BLACK)
@@ -217,7 +217,7 @@ class PointyHexagonMaze(Maze):
                 self.__carve_passage(pq, pr, prev_dir)
                 self.__carve_passage(cq, cr, reverse_dir)
 
-            for nq, nr, new_dir in self.neighbors([cq, cr]):
+            for nq, nr, new_dir in self.__neighbors([cq, cr]):
                 stack.append((nq, nr, OPPOSITE[new_dir]))
 
     def generate(self):
@@ -226,9 +226,9 @@ class PointyHexagonMaze(Maze):
     '''
     When the bitwise AND of a cell and a direction is 0 it means there is no
     connection in that direction, which means there is a wall there. This method
-    assumes that `coords` is known to be in_bounds.
+    assumes that `coords` is known to be in bounds.
     '''
-    def has_wall(self, coords, direction):
+    def __has_wall(self, coords, direction):
         row, col = self.__coords(*coords)
         return self.grid[row][col] & direction == 0
 

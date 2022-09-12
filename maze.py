@@ -15,30 +15,22 @@ class Maze:
     1. For a Cartesian maze `coords` would be a list of 2 ints.
     2. For a hex maze using cube coordinates `coords` would be a list of 3 ints.
     '''
-    def in_bounds(self, coords):
+    def __in_bounds(self, coords):
         raise NotImplementedError("Abstract method `in_bounds` must be implemented")
-
-    '''
-    Fetch the data stored at `coords` in the maze. The way data is represented
-    is entirely up to the derived class. Typically there is some grid backing
-    the maze that contains info in each cell about the cell's walls.
-    '''
-    def at(self, coords):
-        raise NotImplementedError("Abstract method `at` must be implemented")
 
     '''
     Returns True iff the cell represented by `coords` has a wall in the direction
     `direction`. `coords` is a list of integers and `direction`'s representation
     depends on the kind of maze.
     '''
-    def has_wall(self, coords, direction):
-        raise NotImplementedError("Abstract method `has_wall` must be implemented")
+    def __has_wall(self, coords, direction):
+        raise NotImplementedError("Abstract method `__has_wall` must be implemented")
 
     '''
     Generator function to yield a list of neighbor cells for the cell located at
     # `coords`. Implementations will usually end up calling self.in_bounds(coords).
     '''
-    def neighbors(self, coords):
+    def __neighbors(self, coords):
         raise NotImplementedError("Abstract method `neighbors` must be implemented")
 
     '''

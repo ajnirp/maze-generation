@@ -22,13 +22,13 @@ python main.py
 
 # TODO
 
-* Make private most methods except ones like `generate` and `render_*`
+* Triangle maze
 * Add code to print the maze parameters at the bottom of the generated image, with a link to my Github?
 * Factor out maze generation methods into their own class structure?
 * Command-line args to specify what kind of maze and what maze generation method and what maze size
   * Check for compatibility: some mazes might permit only certain methods?
   * Ideally, user specifies maze type, size and window dimensions, and we calculate suitable values for scale and padding from those params
-* Improve rendering: use the padding param, and fill a non-white background color for the maze?
+* Improve rendering: fill a non-white background color for the maze?
 * Add demo images to the README
 
 More long-term ideas
