@@ -12,6 +12,6 @@ if __name__ == '__main__':
     maze.generate()
     maze.render_to_png('hex')
 
-    maze = TriangleMaze(20)
+    maze = TriangleMaze(40)
     maze.generate()
-    # maze.render_to_png('triangle')
+    maze.render_to_png('triangle')

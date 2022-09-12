@@ -3,6 +3,7 @@ from maze import Maze
 from PIL import Image, ImageDraw
 from random import shuffle
 
+SQRT_3 = 1.73205
 N, E, S, W = 1, 2, 4, 8
 SEEN_MARKER = 16 # when this is set, the cell is seen
 
@@ -34,18 +35,17 @@ The overall shape of the grid is an equilateral triangle pointing up
 '''
 class TriangleMaze(Maze):
     def __init__(self, side):
-        self.N = side
-        self.rows = self.N # number of rows in the grid
+        self.N = side # number of rows in the grid
 
         # Grid is stored as an array of arrays
         self.grid = [
             [0 for _ in range(2*r + 1)]
-            for r in range(self.rows)
+            for r in range(self.N)
         ]
 
     def __in_bounds(self, coords):
         r, q = coords
-        return 0 <= r < self.rows and -r <= q <= r
+        return 0 <= r < self.N and -r <= q <= r
 
     def __points_up(self, r, q):
         return (r + q) % 2 == 0
@@ -66,7 +66,50 @@ class TriangleMaze(Maze):
             yield (nr, nq, direction)
 
     def render_to_png(self, filename):
-        pass
+        SC = 40 # output scale
+        M = 25 # padding
+
+        WHITE = (255, 255, 255)
+        BLACK = (0, 0, 0)
+
+        WIDTH = int(self.N*SC) # final row has width == N triangles
+        HEIGHT = int(SQRT_3*WIDTH/2)
+
+        image = Image.new('RGB', (WIDTH + 2*M, HEIGHT + 2*M))
+        draw = ImageDraw.Draw(image)
+
+        draw.rectangle([(0, 0),
+                        (WIDTH + 2*M, HEIGHT + 2*M)],
+                        WHITE)
+
+        # draw the boundary of the overall grid
+        draw.polygon([(M+WIDTH/2, M),
+                      (M, M+HEIGHT),
+                      (M+WIDTH, M+HEIGHT)],
+                     None, BLACK)
+
+        for r in range(self.N):
+            for q in range(-r, r+1):
+                if self.__points_up(r, q):
+                    if self.__has_wall([r, q], E):
+                        draw.line([(M+(WIDTH+q*SC)/2, M+SC*(r*SQRT_3/2)),
+                                   (M+(WIDTH+(q+1)*SC)/2, M+SC*((r+1)*SQRT_3/2))],
+                                  BLACK)
+                    if self.__has_wall([r, q], S):
+                        draw.line([(M+(WIDTH+(q-1)*SC)/2, M+SC*((r+1)*SQRT_3/2)),
+                                   (M+(WIDTH+(q+1)*SC)/2, M+SC*((r+1)*SQRT_3/2))],
+                                  BLACK)
+                else:
+                    if self.__has_wall([r, q], E):
+                        draw.line([(M+(WIDTH+(q+1)*SC)/2, M+SC*(r*SQRT_3/2)),
+                                   (M+(WIDTH+q*SC)/2, M+SC*((r+1)*SQRT_3/2))],
+                                  BLACK)
+
+        del draw
+
+        path = f"./img/{filename}.png"
+        print(f"Writing maze to {path}")
+        image.save(f"{path}", 'PNG')
 
     def carve_passages_from(self, cr, cq):
         # We start out with `reverse_dir` == None.
