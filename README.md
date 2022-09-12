@@ -2,6 +2,14 @@
 
 Implementations of maze generation algorithms. Some are just direct Python ports of Jamis Buck's implementations, for example the [recursive backtracking algo](https://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking.html).
 
+# Demo
+
+Hex maze
+![hex](https://user-images.githubusercontent.com/1688456/189581139-3d9235df-31b1-46e0-bb26-9b348e30af34.png)
+
+Cartesian maze
+![cartesian](https://user-images.githubusercontent.com/1688456/189581144-49ea2275-cec1-4430-94ab-e2f63de04986.png)
+
 # Setup
 
 ```
