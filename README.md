@@ -16,6 +16,7 @@ Cartesian maze
 virtualenv .
 . bin/activate
 pip install Pillow
+mkdir img
 ```
 
 # Run
@@ -23,10 +24,6 @@ pip install Pillow
 ```
 python main.py
 ```
-
-# Notes
-
-* `img/` contains image outputs and its contents can be safely deleted. Don't delete the folder itself
 
 # TODO
 

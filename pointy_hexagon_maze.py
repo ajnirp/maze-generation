@@ -190,8 +190,8 @@ class PointyHexagonMaze(Maze):
 
         del draw
 
-        path = f"./img/{filename}"
-        print(f"Writing maze to {path}.png")
+        path = f"./img/{filename}.png"
+        print(f"Writing maze to {path}")
         image.save(f"{path}", 'PNG')
 
     '''
