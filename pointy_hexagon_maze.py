@@ -115,12 +115,6 @@ class PointyHexagonMaze(Maze):
                         (WIDTH + 2*M, HEIGHT + 2*M)],
                         WHITE)
 
-        # # debugging for padding
-        # draw.rectangle([(M, M),
-        #                 (WIDTH + M, HEIGHT + M)],
-        #                 WHITE,
-        #                 (255, 0, 0))
-
         # draw the top and bottom boundaries
         top_wall, bottom_wall = [], []
         for col in range(self.N + 1):
