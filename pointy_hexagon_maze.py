@@ -56,7 +56,6 @@ class PointyHexagonMaze(Maze):
     # N + (N + 1) + ... [N - 1 terms]
     # which comes out to be N^2 + N(N-1) + (N-1)^2
     def __init__(self, side):
-        super().__init__(side)
         self.N = side
         self.rows = 2*self.N - 1 # number of rows in the grid
 
@@ -197,9 +196,9 @@ class PointyHexagonMaze(Maze):
         stack = [(cq, cr, None)]
 
         while stack:
-            # `reverse_dir` is the direction that takes you from (cx, cy) to the
-            # cell that enqueued it. This is why we start out the stack with a
-            # None `reverse_dir`.
+            # `reverse_dir` is the direction that takes you from the current cell
+            # to the cell that enqueued it. This is why we start out the stack
+            # with a None `reverse_dir`.
             cq, cr, reverse_dir = stack.pop()
             if self.__seen([cq, cr]):
                 continue

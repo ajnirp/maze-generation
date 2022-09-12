@@ -6,7 +6,7 @@ class Maze:
     Initialize a maze. `side` = side length. Initially the maze has no pathways.
     '''
     def __init__(self, side):
-        self.side = side
+        raise NotImplementedError("Constructor must be implemented")
 
     '''
     Returns True iff the cell represented by `coords` lies within the maze.

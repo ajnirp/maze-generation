@@ -32,7 +32,6 @@ Maze based on a 2D square grid.
 '''
 class CartesianMaze(Maze):
     def __init__(self, side):
-        super().__init__(side)
         self.rows = side
         self.cols = side
         self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
@@ -121,13 +120,13 @@ class CartesianMaze(Maze):
     `cx` is the row, `cy` is the column.
     '''
     def carve_passages_from(self, cx, cy):
-        # We start out with `reverse_dir` == None. Read below to see why.
+        # We start out with `reverse_dir` == None.
         stack = [(cx, cy, None)]
 
         while stack:
-            # `reverse_dir` is the direction that takes you from (cx, cy) to the
-            # cell that enqueued it. This is why we start out the stack with a
-            # None `reverse_dir`.
+            # `reverse_dir` is the direction that takes you from the current cell
+            # to the cell that enqueued it. This is why we start out the stack
+            # with a None `reverse_dir`.
             cx, cy, reverse_dir = stack.pop()
             if self.__seen([cy, cx]):
                 continue
